@@ -6,6 +6,7 @@ from pathlib import Path
 from decouple import config
 from datetime import timedelta
 import os
+import dj_database_url
 
 
 # =========================================================
@@ -77,6 +78,8 @@ MIDDLEWARE = [
 
     "django.middleware.security.SecurityMiddleware",
 
+    "whitenoise.middleware.WhiteNoiseMiddleware", 
+
     "corsheaders.middleware.CorsMiddleware",
 
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -135,25 +138,44 @@ TEMPLATES = [
 # DATABASE - MYSQL
 # =========================================================
 
-DATABASES = {
+# DATABASES = {
 
-    "default": {
+#     "default": {
 
-        "ENGINE": "django.db.backends.mysql",
+#         "ENGINE": "django.db.backends.mysql",
 
-        "NAME": config("DB_NAME"),
+#         "NAME": config("DB_NAME"),
 
-        "USER": config("DB_USER"),
+#         "USER": config("DB_USER"),
 
-        "PASSWORD": config("DB_PASSWORD"),
+#         "PASSWORD": config("DB_PASSWORD"),
 
-        "HOST": config("DB_HOST"),
+#         "HOST": config("DB_HOST"),
 
-        "PORT": config("DB_PORT", default="3306"),
+#         "PORT": config("DB_PORT", default="3306"),
 
+#     }
+# }
+
+
+DATABASE_URL = config("DATABASE_URL", default="")
+
+if DATABASE_URL:
+    # Render (or any host providing a single Postgres connection string)
+    DATABASES = {
+        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)
     }
-}
-
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": config("DB_NAME"),
+            "USER": config("DB_USER"),
+            "PASSWORD": config("DB_PASSWORD"),
+            "HOST": config("DB_HOST"),
+            "PORT": config("DB_PORT", default="3306"),
+        }
+    }
 
 # =========================================================
 # PASSWORD VALIDATION
@@ -204,6 +226,7 @@ STATIC_URL = "/static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # =========================================================
 # MEDIA FILES
@@ -260,7 +283,13 @@ SIMPLE_JWT = {
 # CORS
 # =========================================================
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
+
+CORS_ALLOWED_ORIGINS = config(
+    "CORS_ALLOWED_ORIGINS",
+    default="http://localhost:5173"
+).split(",")
 
 
 # =========================================================
