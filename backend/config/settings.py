@@ -6,7 +6,7 @@ from pathlib import Path
 from decouple import config
 from datetime import timedelta
 import os
-import dj_database_url
+
 
 
 # =========================================================
@@ -284,12 +284,19 @@ SIMPLE_JWT = {
 # =========================================================
 
 # CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_ALL_ORIGINS = False
+# CORS_ALLOW_ALL_ORIGINS = False
 
-CORS_ALLOWED_ORIGINS = config(
-    "CORS_ALLOWED_ORIGINS",
-    default="http://localhost:5173"
-).split(",")
+# CORS_ALLOWED_ORIGINS = config(
+#     "CORS_ALLOWED_ORIGINS",
+#     default="http://localhost:5173"
+# ).split(",")
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
 
 # =========================================================
